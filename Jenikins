@@ -1,0 +1,114 @@
+ensure you allow all the traffic in security group of ec2 instance
+ 
+1st way of launching jenkins:
+ 
+sudo su
+apt update
+apt install docker.io -y
+docker run -dt -p 8080:8080 jenkins/jenkins
+ 
+ 
+copy the publicipof the machine
+ 
+in browser:
+ 
+copythepublicip:8080
+ 
+ 
+now we need to unlock the jenkins
+ 
+ 
+go back to the machine
+ 
+docker ps
+ 
+copy the container name or container id
+ 
+docker exec -it containername/containerid /bin/bash
+ 
+#replace the containername or id with what you have copied in above command
+ 
+cat /var/jenkins_home/secrets/initialAdminPassword
+ 
+you will get a password
+ 
+copy the password and paste it the jenkins page 
+ 
+install suggested plugins
+ 
+put username and pass and start using jenkins
+ 
+method 2 
+ 
+where can install jenkins in the machine and run it as a software 
+ 
+ 
+lets first remove the jenkins which we have executed from container
+ 
+docker stop containername
+docker rm containername
+ 
+https://github.com/akshu20791/Deployment-script
+ 
+open jenkins.sh
+ 
+copy the content from it ...
+ 
+and paste it as a whole in the machine
+ 
+ 
+ 
+enter
+ 
+after this is executed
+ 
+copu the publicip 
+ 
+publicipofmachine:8080
+ 
+ 
+ 
+cat /var/lib/jenkins/secrets/initialAdminPassword
+ 
+you will get password
+ 
+get inside the jenkins
+ 
+Now create a job for jenkins...where in we will ask jenkins to print hello world in machine 
+ 
+click on + new item
+ 
+Select freestyle job
+ 
+ 
+ 
+in the configure page of the job --> click on build step in left side
+ 
++ add build step
+ 
+execute shell
+ 
+ 
+ 
+echo hello word
+ 
+save
+ 
+now we need to build the job
+ 
+build now 
+ 
+ 
+ 
+when you click on build now you will see tick mark in build...
+ 
+if it is cross then build is failed..then we need to check the logs to understand why build failed
+ 
+clcik on #1 
+ 
+ 
+click on console output
+ 
+if you build is failed you will be able to see the error
+ 
+ 
