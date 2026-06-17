@@ -1,0 +1,296 @@
+🚀 ✅ COMPLETE ANSIBLE PROCESS (STEP BY STEP)
+✅ STEP 1: Create 3 EC2 Instances
+👉 Create:
+1 Master (Ansible Server)
+2 Nodes
+👉 Make sure all are in same VPC & subnet
+✅ STEP 2: Install Ansible (ONLY on Master)
+Login to Master:
+ 
+ 
+sudo apt update
+sudo apt install ansible -y
+ 
+ 
+✅ STEP 3: Create devops user (ALL MACHINES)
+Run this on:
+Master
+Node1
+Node2
+ 
+ 
+ 
+ 
+sudo adduser devops
+ 
+Show more lines
+ 
+👉 Password:
+ 
+ 
+devops
+ 
+👉 Press Enter → Enter → Enter → Y
+✅ STEP 4: Give SUDO access
+Run on all machines:
+ 
+ 
+sudo visudo
+Show more lines
+ 
+👉 Add this line at bottom:
+ 
+ 
+ 
+ 
+Shell
+ 
+devops ALL=(ALL:ALL) NOPASSWD:ALL
+Show more lines
+ 
+✅ STEP 5: Enable Password Authentication (IMPORTANT)
+Run on all machines:
+ 
+ 
+ 
+ 
+Shell
+ 
+sudo vi /etc/ssh/sshd_config
+``
+Show more lines
+ 
+👉 Ensure:
+ 
+ 
+ 
+ 
+ 
+PasswordAuthentication yes
+PermitRootLogin yes
+Show more lines
+ 
+👉 Then edit:
+ 
+ 
+ 
+ 
+Shell
+ 
+sudo vi /etc/ssh/sshd_config.d/60-cloudimg-settings.conf
+Show more lines
+ 
+👉 Set:
+ 
+ 
+PasswordAuthentication yes
+``
+ 
+👉 Restart SSH:
+ 
+ 
+ 
+ 
+Shell
+ 
+sudo service ssh restart
+ 
+✅ STEP 6: Setup SSH Passwordless (FROM MASTER)
+Switch to devops user:
+ 
+ 
+ 
+ 
+Shell
+ 
+su - devops
+ 
+Show more lines
+ 
+🔹 Generate SSH Key
+ 
+ 
+ 
+ 
+Shell
+ 
+ssh-keygen
+Show more lines
+ 
+Press Enter 3 times
+🔹 Copy key to nodes
+ 
+ 
+ 
+ 
+Shell
+ 
+ssh-copy-id devops@<NODE1_PRIVATE_IP>
+ssh-copy-id devops@<NODE2_PRIVATE_IP>
+Show more lines
+ 
+👉 Enter password:
+ 
+ 
+devops
+ 
+✅ Verify
+ 
+ 
+ 
+ 
+Shell
+ 
+ssh devops@<NODE1_PRIVATE_IP>
+ssh devops@<NODE2_PRIVATE_IP>
+Show more lines
+ 
+👉 Should login without password ✅
+✅ STEP 7: Configure Inventory File
+ 
+ 
+ 
+ 
+Shell
+ 
+sudo vi /etc/ansible/hosts
+ 
+Show more lines
+ 
+👉 Add:
+ 
+ 
+ 
+ 
+INI
+ 
+[ansiblegroup]
+<Node1_IP> ansible_user=devops
+<Node2_IP> ansible_user=devops
+Show more lines
+ 
+✅ STEP 8: Test Ansible
+ 
+ 
+ 
+ 
+Shell
+ 
+ansible ansiblegroup -m ping
+Show more lines
+ 
+👉 Output:
+ 
+ 
+pong ✅
+ 
+✅ STEP 9: Create Playbook
+ 
+ 
+ 
+ 
+Shell
+ 
+vi myplaybook.yml
+``
+Show more lines
+ 
+👉 Paste:
+ 
+ 
+ 
+ 
+YAML
+ 
+---
+- name: Install Apache and create file & directory
+  hosts: ansiblegroup
+  become: yes
+ 
+  tasks:
+ 
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+ 
+    - name: Install apache
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+ 
+    - name: Create blank file
+      ansible.builtin.file:
+        path: /home/devops/myfile.txt
+        state: touch
+        mode: "0644"
+ 
+    - name: Create directory
+      ansible.builtin.file:
+        path: /home/devops/mydir
+        state: directory
+        mode: "0755"
+ 
+Show more lines
+ 
+✅ STEP 10: Run Playbook
+ 
+ 
+ 
+ 
+Shell
+ 
+ansible-playbook myplaybook.yml
+Show more lines
+ 
+✅ ✅ FINAL OUTPUT
+ 
+ 
+TASK [Update apt cache] → ok
+TASK [Install apache] → changed
+TASK [Create blank file] → ok
+TASK [Create directory] → ok
+PLAY RECAP
+ok=4 changed=1 failed=0 ✅✅✅
+ 
+✅ STEP 11: Verify
+ 
+ 
+ 
+ 
+Shell
+ 
+ansible ansiblegroup -a "ls /home/devops"
+Show more lines
+ 
+👉 Output:
+ 
+ 
+myfile.txt
+mydir ✅
+ 
+🔥 SIMPLE ARCHITECTURE
+ 
+ 
+Master (Ansible Server)
+        ↓
+   Controls
+        ↓
+Node1   Node2
+ 
+🎯 FINAL EXAM SUMMARY
+👉 We did:
+Created EC2 instances
+Installed Ansible
+Setup SSH connection
+Configured inventory
+Created playbook
+Automated tasks
+💯 Bro this is FULL COPY-PASTE ANSWER ✅
+
+👉 Your friend can follow this and complete entire lab
+ ‌
+This is the process my frnd sent me ‌
+ 
+help me with this process step by step ‌
+so that i can start doing hands-on for this thing 
+ 
