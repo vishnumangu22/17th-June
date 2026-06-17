@@ -1,0 +1,100 @@
+Go to AWS Console → EC2
+Click Launch Instance
+Select:
+ 
+AMI: Ubuntu
+Instance type: t2.micro (Free Tier)
+ 
+ 
+Create/select key pair
+Allow:
+ 
+SSH (port 22)
+ 
+ 
+Launch the instance
+ 
+Connect to EC2
+ 
+>>sudo su
+ 
+>>wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+ 
+>>echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+ 
+>>sudo apt update && sudo apt install terraform -y
+ 
+>>terraform --version
+ 
+>>mkdir project
+>>cd project
+ 
+Go to AWS Console
+Search → IAM
+Click → Users
+Create user:
+ 
+Name: anything (e.g., terraform-user)
+Permissions: AdministratorAccess
+ 
+ 
+Create user
+Go to:
+ 
+Security Credentials
+Click Create Access Key
+ 
+ 
+✅ Save:
+ 
+Access Key
+Secret Key
+ 
+>vi connection.tf
+ 
+**
+provider "aws" {
+  region     = "us-east-1"   # Change if needed
+  access_key = "YOUR_ACCESS_KEY"
+  secret_key = "YOUR_SECRET_KEY"
+}
+ 
+>>vi ec2.tf
+ 
+**
+data "aws_ami" "ubuntu" {
+  most_recent = true
+ 
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+ 
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+ 
+  owners = ["099720109477"] # Canonical
+}
+ 
+resource "aws_instance" "example" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t3.micro"
+ 
+  tags = {
+    Name = "HelloWorld"
+  }
+}
+ 
+>>terraform init
+ 
+>>terraform apply --auto-approve
+ 
+Go to AWS Console → EC2
+Check instance list
+ 
+✅ You should see:
+Terraform-Instance running
+ 
+>>terraform destroy --auto-approve
